@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 class NN:
 
     # init function
-    def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate):
+    def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate, reg):
         self.inodes = inputnodes
         self.hnodes = hiddennodes
         self.onodes = outputnodes
         self.lr = learningrate
+        self.reg = reg
         
         # init weight between input layer and hidden layer, hidden layer and output layer, the weights obbey normal distribution.
         self.weight_ih = numpy.random.normal(0.0, pow(self.hnodes, 0.5), (self.hnodes, self.inodes))
@@ -33,13 +34,14 @@ class NN:
         final_inputs = numpy.dot(self.weight_ho, hidden_outputs)
         final_outputs = self.activation(final_inputs)
 
+        
         # calculate final layer errors and hidden layer errors, use BackPropagation algorithm.
         output_errors = target - final_outputs
         hidden_errors = numpy.dot(self.weight_ho.T, output_errors)
         
         # update weight
-        self.weight_ho += self.lr * numpy.dot(output_errors * final_outputs * (1 - final_outputs), hidden_outputs.T)
-        self.weight_ih += self.lr * numpy.dot(hidden_errors * hidden_outputs * (1 - hidden_outputs), inputs.T)
+        self.weight_ho += self.lr * (numpy.dot(output_errors * final_outputs * (1 - final_outputs), hidden_outputs.T) + self.reg * numpy.sum(numpy.sign(self.weight_ho)))
+        self.weight_ih += self.lr * (numpy.dot(hidden_errors * hidden_outputs * (1 - hidden_outputs), inputs.T) + self.reg * numpy.sum(numpy.sign(self.weight_ih)))
     
     # Query NN
     def query(self, input_list):
@@ -54,9 +56,10 @@ def main():
     input_nodes = 2
     hidden_nodes = 200
     output_nodes = 1
-    learningrate = 0.3
+    learningrate = 0.1
+    reg = 0.00000000001
 
-    n = NN(input_nodes, hidden_nodes, output_nodes, learningrate)
+    n = NN(input_nodes, hidden_nodes, output_nodes, learningrate, reg)
 
     data_file = open('shuffle_data.dat', 'r')
     raw_data = data_file.readlines()
@@ -84,32 +87,28 @@ def main():
     # 对验证集的真实结果进行处理，使其更易读
     test_y = numpy.asfarray(test_y).tolist()
     test_y = [int(y) for y in test_y]
-    
+
+
     # 对训练集的真实结果进行处理
     train_y = numpy.asfarray(train_y)
-    for [i,y] in enumerate(train_y):
-        if y == 1:
-            train_y[i] = 0.99
-        else:
-            train_y[i] = 0.01
 
     # training network
-    epoches = 1000
+    epoches = 10000
     for i in range(epoches):
         for [j, x] in enumerate(train_x):
-            inputs = numpy.asfarray(x) / 500
+            inputs = numpy.asfarray(x) / 100
             targets = train_y[j]
             n.train(inputs, targets)
 
     output = []
     predict = []
     for i in test_x:
-        output.append(n.query(numpy.asfarray(i) / 500))
-        if (n.query(numpy.asfarray(i) / 500)) > 0.5:
+        output.append(n.query(numpy.asfarray(i) / 100))
+        if (n.query(numpy.asfarray(i) / 100)) > 0.5:
             predict.append(int(1))
         else:
             predict.append(int(0))
-
+    
     print(output)
     print(test_y)
     print(predict)
@@ -121,6 +120,23 @@ def main():
     
     print(predict_true / 16)
     
+    train_y = train_y.tolist()
+    train_y = [int(y) for y in train_y] 
+
+    predict_training_set = []
+    for i in train_x:
+        if (n.query(numpy.asfarray(i) / 100)) > 0.5:
+            predict_training_set.append(int(1))
+        else:
+            predict_training_set.append(int(0))
+
+    training_true = 0
+    for i in range(64):
+        if predict_training_set[i] == train_y[i]:
+            training_true += 1
+    
+    print(training_true / 64)
+
 
 if __name__ == '__main__':
     main()
