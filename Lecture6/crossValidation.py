@@ -6,10 +6,10 @@ from sklearn.model_selection import KFold
 
 def main():
     x, y = Data.getAllData()
-    learning_rate = 0.3
-    reg = 1e-8
+    learning_rate = 0.1
+    reg = 0
     input_nodes = 2
-    hidden_nodes = 150
+    hidden_nodes = 5
     output_nodes = 1
     
     prediction = 0  # 最后预测结果
@@ -25,7 +25,7 @@ def main():
             x_test.append(x[i])
             y_test.append(y[i])
 
-        epoch = 5000
+        epoch = 1000
         n = NN(input_nodes, hidden_nodes, output_nodes, learning_rate, reg)
         for i in range(epoch):
             for [j, x_temp] in enumerate(x_train):
@@ -33,26 +33,13 @@ def main():
                 targets = y_train[j]
                 n.train(inputs, targets)
         
-        predict_true = 0
-        result = []
         query_result = []
         for j in range(16):
-            temp = n.query(np.array(x_test[j]) / 100)
-            if (temp > 0.5) & (y_test[j] == 1.0):
-                predict_true += 1
-                result.append(float(1.0))
-            elif (temp < 0.5) & (y_test[j] == 0.0):
-                predict_true += 1
-                result.append(float(1.0))
-            else:
-                result.append(float(0.0))
-            query_result.append(temp)
+            query_result.append(n.query(np.array(x_test[j]) / 100))
 
-        predict_true /= 16
+        predict_true = Data.calAc(query_result, y_test)
         prediction += predict_true
         print(predict_true)
-        print("result:", result)
-        print("y_test", y_test)
 
     prediction /= 5
     print("cross validation result:", prediction)

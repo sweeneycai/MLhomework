@@ -92,6 +92,27 @@ class Data:
             y.append(float(i[2].rstrip('\n')))
 
         return x, y
+    
+    @classmethod
+    def calAc(cls, x, y):
+        temp = []
+        for i in x:
+            if i >= 0.5:
+                temp.append(1.0)
+            else:
+                temp.append(0.0)
+
+        if len(temp) == len(y):
+            length = len(temp)
+            count = 0
+            for i in range(length):
+                if temp[i] == y[i]:
+                    count += 1
+            return count / length
+        else:
+            print("len(x):" + len(x) +  " != " + " len(y):" + len(y))
+             
+
 
 if __name__ == '__main__':
     main()
