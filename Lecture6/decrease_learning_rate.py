@@ -58,8 +58,8 @@ def main():
 
         if i % 10 == 0:
             plt.subplot(121)
-            plt.scatter(i, (loss_train / 8), marker="^", c='b')
-            plt.scatter(i, (loss_test / 2), marker='o', c='r')
+            plt.scatter(i, (loss_train / 64), marker="^", c='b')
+            plt.scatter(i, (loss_test / 16), marker='o', c='r')
             plt.subplot(122)
             plt.scatter(i, n.lr, marker='o', c='r')
             plt.pause(0.1)
