@@ -6,15 +6,14 @@ import matplotlib.pyplot as plt
 class NN:
 
     # init function
-    def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate, reg):
+    def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate, reg, ):
         self.inodes = inputnodes
         self.hnodes = hiddennodes
         self.onodes = outputnodes
         self.lr = learningrate
         self.reg = reg
         
-        # init weight between input layer and hidden layer, hidden layer and output layer,
-        # the weights obbey normal distribution.
+        # init weight between input layer and hidden layer, hidden layer and output layer, the weights obbey normal distribution.
         self.weight_ih = numpy.random.normal(0.0, pow(self.hnodes, 0.5), (self.hnodes, self.inodes))
         self.weight_ho = numpy.random.normal(0.0, pow(self.onodes, 0.5), (self.onodes, self.hnodes))
         
@@ -35,15 +34,14 @@ class NN:
         final_inputs = numpy.dot(self.weight_ho, hidden_outputs)
         final_outputs = self.activation(final_inputs)
 
+        
         # calculate final layer errors and hidden layer errors, use BackPropagation algorithm.
         output_errors = target - final_outputs
         hidden_errors = numpy.dot(self.weight_ho.T, output_errors)
         
         # update weight
-        self.weight_ho += self.lr * (numpy.dot(output_errors * final_outputs * (1 - final_outputs), hidden_outputs.T)
-                                     + self.reg * numpy.sum(numpy.sign(self.weight_ho)))
-        self.weight_ih += self.lr * (numpy.dot(hidden_errors * hidden_outputs * (1 - hidden_outputs), inputs.T)
-                                     + self.reg * numpy.sum(numpy.sign(self.weight_ih)))
+        self.weight_ho += self.lr * (numpy.dot(output_errors * final_outputs * (1 - final_outputs), hidden_outputs.T) + self.reg * numpy.sum(numpy.sign(self.weight_ho))) 
+        self.weight_ih += self.lr * (numpy.dot(hidden_errors * hidden_outputs * (1 - hidden_outputs), inputs.T) + self.reg * numpy.sum(numpy.sign(self.weight_ih)))
     
     # Query NN
     def query(self, input_list):
@@ -53,14 +51,13 @@ class NN:
         final_inputs = numpy.dot(self.weight_ho, hidden_outputs)
         final_outputs = self.activation(final_inputs)
         return final_outputs
-
-
+    
 def main():
     input_nodes = 2
     hidden_nodes = 200
     output_nodes = 1
     learningrate = 0.1
-    reg = 0.00000000001
+    reg = 0.000000000000001
 
     n = NN(input_nodes, hidden_nodes, output_nodes, learningrate, reg)
 
