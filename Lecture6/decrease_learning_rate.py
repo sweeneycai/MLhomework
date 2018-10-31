@@ -13,23 +13,14 @@ def main():
     epoch = 5000  
     loss_train_all = []
     loss_test_all = []
-    accu_train = []
-    accu_test = []
 
     plt.ion()
-    plt.subplot(121)
     plt.grid(True)
+    # plt.ylim(0, 10)
     plt.xlim(0, epoch)
     plt.xlabel("Generation")
     plt.ylabel("Loss")
     plt.title("The relationship between generations and loss")
-    plt.subplot(122)
-    plt.grid(True)
-    plt.xlim(0, epoch)
-    plt.xlabel("Generation")
-    plt.ylim(0, 1)
-    plt.ylabel("Accuracy")
-    plt.title("The relationship between generations and accuracy")
 
     n = NN(input_nodes, hidden_nodes, output_nodes, learning_rate, reg)
 
@@ -57,25 +48,20 @@ def main():
             loss_test += pow((result - test_y[j]), 2) / 2
             testing_result.append(result)
 
-        ac_train = Data.calAc(training_result, training_y)
-        ac_test = Data.calAc(testing_result, test_y)
-
-        print("test ac:", ac_test, "  epoch:", i)
         loss_train_all.append(float(loss_train / 8))
         loss_test_all.append(float(loss_test / 2))
-        accu_test.append(ac_test)
-        accu_train.append(ac_train)
 
-        if i % 100 == 0:
-            plt.subplot(121)
-            plt.scatter(i, loss_train, c='b', marker='^')
-            plt.scatter(i, loss_test, c='r', marker='o')
-            plt.subplot(122)
-            plt.scatter(i, ac_train, c='b', marker='^')
-            plt.scatter(i, ac_test, c='r', marker='o')
-            plt.savefig('loss.png')
-            plt.pause(0.01)
-        
+        # decrease learning rate
+        learning_rate /= 1.1
+
+        if i % 50 == 0:
+            plt.scatter(i, (loss_train / 8), marker="^", c='b')
+            plt.scatter(i, (loss_test / 2), marker='o', c='r')
+            plt.pause(0.1)
+
+            print(i)
+    
+        plt.savefig('change_learning_rate.png')
 
 
 if __name__ == "__main__":
