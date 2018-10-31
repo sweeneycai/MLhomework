@@ -61,20 +61,20 @@ def main():
         ac_test = Data.calAc(testing_result, test_y)
 
         print("test ac:", ac_test, "  epoch:", i)
-        loss_train_all.append(float(loss_train / 8))
-        loss_test_all.append(float(loss_test / 2))
+        loss_train_all.append(float(loss_train / 64))
+        loss_test_all.append(float(loss_test / 16))
         accu_test.append(ac_test)
         accu_train.append(ac_train)
 
-        if i % 100 == 0:
+        if i % 50 == 0:
             plt.subplot(121)
-            plt.scatter(i, loss_train, c='b', marker='^')
-            plt.scatter(i, loss_test, c='r', marker='o')
+            plt.scatter(i, loss_train / 64, c='b', marker='^')
+            plt.scatter(i, loss_test / 16, c='r', marker='o')
             plt.subplot(122)
             plt.scatter(i, ac_train, c='b', marker='^')
             plt.scatter(i, ac_test, c='r', marker='o')
             plt.savefig('loss.png')
-            plt.pause(0.01)
+            plt.pause(0.1)
         
 
 
